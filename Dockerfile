@@ -1,27 +1,16 @@
-#FROM openjdk:17-jdk-alpine as builder
-#
-#COPY gradle gradle
-#COPY build.gradle settings.gradle gradlew ./
-#COPY src src
-#
-#RUN ./gradlew clean build
-#
-#ARG JAR_FILE=build/libs/*.jar
-#COPY ${JAR_FILE} app.jar
-#
-#ENTRYPOINT ["java", "-jar", "/app.jar"]
-# RUN cp /workspace/app/build/libs/*.jar /app.jar
-# RUN mkdir -p build/libs/dependency && (cd build/libs/dependency; jar -xf ../*.jar)
+FROM gradle:7.4-jdk17-alpine as builder
 
-#FROM openjdk:17-jdk-alpine
-#COPY --from=builder /app.jar /app.jar
-#ENTRYPOINT ["java", "-jar", "/app.jar"]
+WORKDIR /app
+COPY ./ ./
+RUN gradle clean build --no-daemon
 
+# APP
+FROM openjdk:17.0-slim
+WORKDIR /app
+# 빌더 이미지에서 jar 파일만 복사
+COPY --from=builder /app/build/libs/test17-0.0.1-SNAPSHOT.jar .
 
-
-FROM openjdk:17 AS builder
-COPY . /usr/src/wip
-
-# Main server Build
-WORKDIR /usr/src/wip/
-RUN bash ./gradlew build -x test
+EXPOSE 8080
+# root 대신 nobody 권한으로 실행
+USER nobody
+ENTRYPOINT ["java", "-jar", "test17-0.0.1-SNAPSHOT.jar"]
