@@ -13,5 +13,5 @@ COPY --from=builder /app/build/libs/test17-0.0.1-SNAPSHOT.jar .
 
 EXPOSE 8080
 
-USER nobody
+USER ROOT
 ENTRYPOINT ["java", "-jar", "test17-0.0.1-SNAPSHOT.jar"]
