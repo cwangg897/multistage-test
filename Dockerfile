@@ -1,4 +1,4 @@
-FROM gradle:7.4-jdk17-alpine as builder
+FROM gradle:7.4-jdk17-alpine as builder # -> FROM gradle:7-jdk17 as builder 으로 수정
 
 WORKDIR /app
 
